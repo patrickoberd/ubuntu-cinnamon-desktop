@@ -298,9 +298,6 @@ A: Yes! noVNC works on mobile browsers, though desktop is best on larger screens
 **Q: How do I share files between my computer and workspace?**
 A: Click "📁 Files" app in Coder → drag and drop files to upload or download.
 
-**Q: Is this free?**
-A: The template is free. You pay only for the cloud resources (Kubernetes cluster) it runs on.
-
 **Q: Can I use this for production work?**
 A: Yes! Many developers use cloud desktops for daily work. Remember to commit code to Git.
 
