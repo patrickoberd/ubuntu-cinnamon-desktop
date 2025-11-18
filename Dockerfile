@@ -84,9 +84,7 @@ RUN apt-get update && apt-get install -y \
     # File managers
     ranger \
     # GUI applications
-    firefox \
     galculator \
-    # Notification daemon (included in cinnamon)
     # Network tools
     net-tools \
     iproute2 \
@@ -117,6 +115,16 @@ RUN mkdir -p /usr/share/fonts/truetype/firacode-nerd && \
     unzip FiraCode.zip -d /usr/share/fonts/truetype/firacode-nerd && \
     rm FiraCode.zip && \
     fc-cache -fv
+
+# Install Firefox from Mozilla repository (not snap - snaps don't work in containers)
+RUN install -d -m 0755 /etc/apt/keyrings && \
+    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee /etc/apt/sources.list.d/mozilla.list > /dev/null && \
+    echo 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' | tee /etc/apt/preferences.d/mozilla && \
+    apt-get update && \
+    apt-get install -y firefox && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Docker CLI (not Docker daemon - workspaces use host Docker socket)
 RUN install -m 0755 -d /etc/apt/keyrings && \
@@ -350,6 +358,14 @@ gtk-xft-hinting=1
 gtk-xft-hintstyle=hintfull
 gtk-xft-rgba=rgb
 GTK_EOF
+
+# Configure XFCE default applications (Firefox as default browser)
+RUN mkdir -p /etc/skel/.config/xfce4 && \
+    cat > /etc/skel/.config/xfce4/helpers.rc << 'HELPERS_EOF'
+WebBrowser=firefox
+TerminalEmulator=xfce4-terminal
+FileManager=thunar
+HELPERS_EOF
 
 # Environment setup
 ENV DISPLAY=:1
