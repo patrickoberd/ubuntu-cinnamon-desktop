@@ -113,12 +113,11 @@ done
 
 # Set environment for X11 applications
 export DISPLAY=:1
-export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
 
 # Start D-Bus session bus
 echo "Starting D-Bus session..."
-mkdir -p /run/user/$(id -u)
-if [ ! -S "/run/user/$(id -u)/bus" ]; then
+if [ ! -S "$XDG_RUNTIME_DIR/bus" ]; then
     dbus-daemon --session --address="$DBUS_SESSION_BUS_ADDRESS" --nofork --nopidfile --syslog-only &
     DBUS_PID=$!
     sleep 2
@@ -157,18 +156,9 @@ if command -v gsettings &> /dev/null; then
     echo "Cinnamon customizations applied"
 fi
 
-# Auto-start applications if enabled
-if [ "${AUTO_START_APPS:-true}" = "true" ]; then
-    echo "Auto-starting applications..."
-    sleep 3
-    # Give Cinnamon time to fully load before launching apps
-    firefox http://localhost:8080 > /dev/null 2>&1 &
-    echo "Firefox launched"
-fi
-
 # Start noVNC websocket proxy
 echo "Starting noVNC..."
-/opt/websockify/run localhost:6080 localhost:5901 > /tmp/novnc.log 2>&1 &
+/opt/websockify/run --web /opt/noVNC localhost:6080 localhost:5901 > /tmp/novnc.log 2>&1 &
 NOVNC_PID=$!
 echo "noVNC started with PID $NOVNC_PID"
 
@@ -184,6 +174,21 @@ CODECFG
 code-server --bind-addr 0.0.0.0:8080 > /tmp/code-server.log 2>&1 &
 CODE_SERVER_PID=$!
 echo "code-server started with PID $CODE_SERVER_PID"
+
+# Wait for services to be ready
+echo "Waiting for services to be ready..."
+sleep 3
+
+# Verify critical services are running
+for service_port in "5901:VNC" "6080:noVNC" "8080:code-server"; do
+    port="${service_port%%:*}"
+    name="${service_port##*:}"
+    if ! timeout 30 bash -c "until nc -z localhost $port 2>/dev/null; do sleep 1; done" 2>/dev/null; then
+        echo "WARNING: $name (port $port) is not responding"
+    else
+        echo "$name is ready on port $port"
+    fi
+done
 
 # ============================================================================
 # PHASE 4: Coder Agent Installation
@@ -233,13 +238,14 @@ monitor_process() {
     local restart_cmd=$3
 
     if ! kill -0 $pid 2>/dev/null; then
-        echo "WARNING: $name (PID $pid) has stopped. Restarting..."
+        echo "WARNING: $name (PID $pid) has stopped. Restarting..." >&2
         eval "$restart_cmd &"
         local new_pid=$!
-        echo "$name restarted with new PID $new_pid"
-        return $new_pid
+        echo "$name restarted with new PID $new_pid" >&2
+        echo $new_pid
+    else
+        echo $pid
     fi
-    return $pid
 }
 
 # Trap SIGTERM for graceful shutdown
