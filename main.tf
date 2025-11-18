@@ -11,8 +11,8 @@ terraform {
 
 # Non-user-facing variables (not exposed as parameters)
 variable "image" {
-  description = "Container image (automatically built via GitHub Actions)"
-  default     = "ghcr.io/patrickoberd/ubuntu-cinnamon-desktop:latest"
+  description = "Container image (cached from GHCR to local registry)"
+  default     = "docker-registry.registry.svc.cluster.local:5000/patrickoberd/ubuntu-cinnamon-desktop:latest"
   type        = string
 }
 
