@@ -27,12 +27,9 @@ if [ ! -f "$HOME/.workspace-initialized" ]; then
     # Apply customizations from environment variables
     echo "Applying user customizations..."
 
-    # Set default shell
-    if [ "${DEFAULT_SHELL:-zsh}" = "bash" ]; then
-        sudo chsh -s /bin/bash coder
-    else
-        sudo chsh -s /bin/zsh coder
-    fi
+    # Note: Default shell is set in Dockerfile (zsh by default)
+    # Users can manually change shell with: chsh -s /bin/bash (requires authentication)
+    # The DEFAULT_SHELL env var is available for scripts but doesn't change login shell
 
     # Configure git
     git config --global init.defaultBranch "${GIT_DEFAULT_BRANCH:-main}"

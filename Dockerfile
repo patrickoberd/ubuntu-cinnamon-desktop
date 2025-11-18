@@ -154,6 +154,16 @@ RUN MINISERVE_VERSION=0.28.0 && \
     curl -fsSL "https://github.com/svenstaro/miniserve/releases/download/v${MINISERVE_VERSION}/miniserve-${MINISERVE_VERSION}-x86_64-unknown-linux-musl" -o /usr/local/bin/miniserve && \
     chmod +x /usr/local/bin/miniserve
 
+# Generate locales for international support
+RUN apt-get update && \
+    apt-get install -y locales && \
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    sed -i '/en_GB.UTF-8/s/^# //g' /etc/locale.gen && \
+    sed -i '/de_DE.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Create user
 RUN useradd -m -s /bin/zsh -G sudo coder && \
     echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
