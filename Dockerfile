@@ -130,13 +130,12 @@ RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | gpg --d
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Helm
-RUN curl -fsSL https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/keyrings/helm.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
-    apt-get update && \
-    apt-get install -y helm && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install Helm (direct binary download - more reliable than apt)
+RUN HELM_VERSION=3.16.3 && \
+    curl -fsSL "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | tar -xz -C /tmp && \
+    mv /tmp/linux-amd64/helm /usr/local/bin/helm && \
+    chmod +x /usr/local/bin/helm && \
+    rm -rf /tmp/linux-amd64
 
 # Install noVNC for browser access
 RUN mkdir -p /opt/noVNC /opt/websockify && \
