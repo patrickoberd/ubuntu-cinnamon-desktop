@@ -1,5 +1,5 @@
 #!/bin/bash
-# Quick launcher menu for Ubuntu Cinnamon Desktop
+# Quick launcher menu for Ubuntu XFCE Desktop
 # Provides quick access to common actions via rofi
 
 # Check if rofi is installed
@@ -31,19 +31,19 @@ SELECTED=$(echo -e "$OPTIONS" | rofi -dmenu -i -p "Quick Actions" -theme Arc-Dar
 # Execute selected action
 case "$SELECTED" in
     *"Terminal")
-        gnome-terminal &
+        xfce4-terminal &
         ;;
     *"Firefox")
         firefox &
         ;;
     *"File Manager")
-        nemo &
+        thunar &
         ;;
     *"VS Code"*)
         firefox http://localhost:8080 &
         ;;
     *"System Monitor")
-        gnome-terminal -- htop &
+        xfce4-terminal -e htop &
         ;;
     *"Calculator")
         galculator &
@@ -72,18 +72,19 @@ case "$SELECTED" in
         fi
 
         # Open in text editor
-        gedit "$NOTE_FILE" &
+        mousepad "$NOTE_FILE" &
         ;;
     *"Browse Notes")
-        nemo "$HOME/notes" &
+        thunar "$HOME/notes" &
         ;;
     *"Lock Screen")
-        cinnamon-screensaver-command --lock
+        xflock4
         ;;
     *"Reload Desktop")
-        cinnamon --replace &
+        xfce4-panel --restart &
+        xfwm4 --replace &
         ;;
     *"Log Out")
-        cinnamon-session-quit --logout
+        xfce4-session-logout --logout
         ;;
 esac

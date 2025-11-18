@@ -1,5 +1,5 @@
-# Ubuntu Cinnamon Desktop for Coder
-# Beginner-friendly development environment with modern GUI
+# Ubuntu XFCE Desktop for Coder
+# Beginner-friendly development environment with modern themed GUI
 
 FROM ubuntu:24.04
 
@@ -8,12 +8,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Update and install core packages
 RUN apt-get update && apt-get install -y \
-    # Desktop environment
-    cinnamon-desktop-environment \
-    cinnamon-core \
-    cinnamon-screensaver \
-    nemo \
-    gnome-terminal \
+    # Desktop environment - XFCE with modern theming
+    xfce4 \
+    xfce4-goodies \
+    xfce4-terminal \
+    thunar \
+    # Modern themes and appearance
+    arc-theme \
+    papirus-icon-theme \
+    fonts-firacode \
+    # Desktop enhancements
+    plank \
+    picom \
+    xfce4-whiskermenu-plugin \
     # VNC server
     tigervnc-standalone-server \
     tigervnc-common \
@@ -176,7 +183,7 @@ RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /etc/skel/.oh-my-
 # This ensures the correct version is always used
 
 # Create configuration directories
-RUN mkdir -p /etc/skel/.config/cinnamon /etc/skel/.config/gtk-3.0 /etc/skel/.vnc
+RUN mkdir -p /etc/skel/.config/xfce4 /etc/skel/.config/gtk-3.0 /etc/skel/.vnc
 
 # Copy configuration files
 COPY build/.zshrc /etc/skel/.zshrc
@@ -322,6 +329,27 @@ RUN mkdir -p /etc/skel/.continue && \
   "docs": []
 }
 EOF
+
+# Configure modern XFCE theme (Arc-Dark + Papirus icons)
+RUN mkdir -p /etc/skel/.config/gtk-3.0 && \
+    cat > /etc/skel/.config/gtk-3.0/settings.ini << 'GTK_EOF'
+[Settings]
+gtk-theme-name=Arc-Dark
+gtk-icon-theme-name=Papirus-Dark
+gtk-font-name=Ubuntu 11
+gtk-cursor-theme-name=Adwaita
+gtk-cursor-theme-size=24
+gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=0
+gtk-menu-images=0
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintfull
+gtk-xft-rgba=rgb
+GTK_EOF
 
 # Environment setup
 ENV DISPLAY=:1

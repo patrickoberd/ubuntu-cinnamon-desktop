@@ -1,20 +1,21 @@
-# Ubuntu Cinnamon Desktop for Coder
+# Ubuntu XFCE Desktop for Coder
 
-A beginner-friendly, full-featured Ubuntu desktop environment with Cinnamon desktop, accessible entirely from your browser. Perfect for learning to code, web development, or just having a familiar Linux desktop in the cloud!
+A beginner-friendly, full-featured Ubuntu desktop environment with modern XFCE desktop (Arc-Dark theme), accessible entirely from your browser. Perfect for learning to code, web development, or just having a familiar Linux desktop in the cloud!
 
 ## Why This Template?
 
 - **No Linux knowledge required** - Works like Windows or Mac
 - **Traditional desktop** - Familiar taskbar, start menu, and desktop icons
 - **Point-and-click** - Mouse-driven interface, no keyboard shortcuts needed
-- **Modern & elegant** - Beautiful Cinnamon desktop that looks like Windows 10/11
+- **Modern & elegant** - XFCE with Arc-Dark theme and Papirus icons
+- **Lightweight** - Fast and responsive (~250MB RAM, works great in containers)
 - **Fully equipped** - All development tools pre-installed and ready to use
 - **AI-powered coding** - Built-in AI assistant (Continue.dev) for coding help
 
 ## What You Get
 
 ### Desktop Environment
-- **Cinnamon Desktop** - Modern, elegant interface with taskbar and start menu
+- **XFCE Desktop** - Modern themed interface with Arc-Dark + Papirus icons
 - **Browser Access** - No installation needed, access from any web browser
 - **Persistent Storage** - Your files are saved between sessions
 - **Customizable** - Choose your theme, resolution, timezone, and more
@@ -80,7 +81,7 @@ cd coder-templates/ubuntu-cinnamon-desktop
 # Create the template
 coder templates create ubuntu-cinnamon-desktop \
   --directory . \
-  --name "Ubuntu Cinnamon Desktop"
+  --name "Ubuntu XFCE Desktop"
 
 # Or update existing template
 coder templates push ubuntu-cinnamon-desktop --directory .
@@ -90,10 +91,10 @@ coder templates push ubuntu-cinnamon-desktop --directory .
 
 1. Go to your Coder dashboard
 2. Click **"Create Workspace"**
-3. Select **"Ubuntu Cinnamon Desktop"** template
+3. Select **"Ubuntu XFCE Desktop"** template
 4. Choose your preferences:
    - **CPU**: 2-4 cores (4 cores recommended for smooth experience)
-   - **Memory**: 4-8 GB (4GB minimum for Cinnamon desktop)
+   - **Memory**: 4-8 GB (2GB minimum for XFCE, 4GB recommended)
    - **Disk**: 20+ GB (based on your needs)
    - **Resolution**: Your screen resolution
    - **Theme**: Dark or Light
@@ -268,19 +269,19 @@ When you restart your workspace:
 
 **Minimum Requirements**:
 - **CPU**: 2 cores
-- **Memory**: 4 GB (Cinnamon desktop needs ~500MB)
+- **Memory**: 2 GB (XFCE desktop needs ~250MB)
 - **Disk**: 20 GB
 
 **Recommended for smooth experience**:
 - **CPU**: 4 cores (for compiling code and running multiple apps)
-- **Memory**: 8 GB (for large projects and multiple applications)
+- **Memory**: 4-8 GB (for large projects and multiple applications)
 - **Disk**: 50-100 GB (for projects, dependencies, and downloads)
 
 ## Getting Help
 
 ### Learning Resources
 - **Ubuntu Documentation**: https://help.ubuntu.com/
-- **Cinnamon Desktop Guide**: https://linuxmint.com/documentation.php (Cinnamon is from Linux Mint)
+- **XFCE Desktop Guide**: https://docs.xfce.org/
 - **VS Code Docs**: https://code.visualstudio.com/docs
 - **Continue.dev Docs**: https://continue.dev/docs
 

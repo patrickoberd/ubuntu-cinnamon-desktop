@@ -1,10 +1,10 @@
 #!/bin/bash
-# Startup script for Ubuntu Cinnamon Desktop workspace
-# Initializes VNC server, Cinnamon session, noVNC, code-server, and Coder agent
+# Startup script for Ubuntu XFCE Desktop workspace
+# Initializes VNC server, XFCE session, noVNC, code-server, and Coder agent
 
 set -e
 
-echo "Starting Ubuntu Cinnamon Desktop workspace..."
+echo "Starting Ubuntu XFCE Desktop workspace..."
 
 # ============================================================================
 # PHASE 1: First-Run Configuration
@@ -85,7 +85,7 @@ echo "Starting desktop services..."
 
 # Kill any existing services (idempotent restarts)
 pkill -f "Xvnc" || true
-pkill -f "cinnamon-session" || true
+pkill -f "xfce4-session" || true
 pkill -f "websockify" || true
 pkill -f "code-server" || true
 sleep 2
@@ -124,36 +124,37 @@ if [ ! -S "$XDG_RUNTIME_DIR/bus" ]; then
     echo "D-Bus started with PID $DBUS_PID"
 fi
 
-# Start Cinnamon session
-echo "Starting Cinnamon desktop environment..."
-cinnamon-session > /tmp/cinnamon.log 2>&1 &
-CINNAMON_PID=$!
-echo "Cinnamon started with PID $CINNAMON_PID"
+# Start XFCE session
+echo "Starting XFCE desktop environment..."
+startxfce4 > /tmp/xfce.log 2>&1 &
+XFCE_PID=$!
+echo "XFCE started with PID $XFCE_PID"
 
-# Wait for Cinnamon to initialize
+# Wait for XFCE to initialize
 sleep 5
 
-# Apply Cinnamon customizations via gsettings (if dconf is available)
-if command -v gsettings &> /dev/null; then
-    echo "Applying Cinnamon customizations..."
+# Apply XFCE customizations via xfconf-query
+if command -v xfconf-query &> /dev/null; then
+    echo "Applying XFCE theme customizations..."
 
-    # Set theme
-    THEME="${CINNAMON_THEME:-Mint-Y-Dark}"
-    gsettings set org.cinnamon.desktop.interface gtk-theme "$THEME" 2>/dev/null || true
-    gsettings set org.cinnamon.theme name "$THEME" 2>/dev/null || true
+    # Wait for xfconf daemon
+    for i in {1..30}; do
+        if xfconf-query -c xsettings -l &>/dev/null; then
+            break
+        fi
+        sleep 0.5
+    done
 
-    # Set panel position
-    PANEL_POS="${PANEL_POSITION:-bottom}"
-    # Note: Panel position changes require more complex dconf manipulation
-    # For simplicity, we'll document this as a manual setting
+    # Set Arc-Dark theme
+    xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Dark" 2>/dev/null || true
+    xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus-Dark" 2>/dev/null || true
+    xfconf-query -c xsettings -p /Gtk/FontName -s "Ubuntu 11" 2>/dev/null || true
 
-    # Enable desktop icons
-    gsettings set org.nemo.desktop show-desktop-icons true 2>/dev/null || true
+    # Panel configuration
+    xfconf-query -c xfce4-panel -p /panels/panel-1/position -s "p=8;x=0;y=0" 2>/dev/null || true
+    xfconf-query -c xfce4-panel -p /panels/panel-1/size -s 32 2>/dev/null || true
 
-    # Set favorite apps in panel
-    gsettings set org.cinnamon favorite-apps "['gnome-terminal.desktop', 'firefox.desktop', 'nemo.desktop']" 2>/dev/null || true
-
-    echo "Cinnamon customizations applied"
+    echo "XFCE customizations applied"
 fi
 
 # Start noVNC websocket proxy
@@ -224,10 +225,11 @@ fi
 
 echo ""
 echo "============================================"
-echo "Ubuntu Cinnamon Desktop is ready!"
+echo "Ubuntu XFCE Desktop is ready!"
 echo "============================================"
 echo "Access via noVNC: http://localhost:6080"
 echo "Access VS Code: http://localhost:8080"
+echo "Theme: Arc-Dark with Papirus icons"
 echo "============================================"
 echo ""
 
@@ -258,9 +260,9 @@ while true; do
         XVNC_PID=$(monitor_process $XVNC_PID "Xvnc" "Xvnc :1 -rfbport 5901 -SecurityTypes None -geometry $RESOLUTION -depth 24 -localhost yes -AlwaysShared yes > /tmp/xvnc.log 2>&1")
     fi
 
-    # Check Cinnamon
-    if [ -n "${CINNAMON_PID:-}" ]; then
-        CINNAMON_PID=$(monitor_process $CINNAMON_PID "Cinnamon" "cinnamon-session > /tmp/cinnamon.log 2>&1")
+    # Check XFCE
+    if [ -n "${XFCE_PID:-}" ]; then
+        XFCE_PID=$(monitor_process $XFCE_PID "XFCE" "startxfce4 > /tmp/xfce.log 2>&1")
     fi
 
     # Check noVNC
